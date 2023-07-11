@@ -84,7 +84,7 @@
       return ["kemono.su", "kemono.party"].includes(location.hostname);
     },
 
-    async replaceThumbnailsAndSetMaxWidth() {
+    async replaceThumbnailsAndSetMaxHeight() {
       const imgElements = document.body
         .querySelectorAll('a > img[src^="//img.kemono.party/thumbnail/"]');
 
@@ -104,7 +104,7 @@
     },
 
     run() {
-      kemono.replaceThumbnailsAndSetMaxWidth();
+      kemono.replaceThumbnailsAndSetMaxHeight();
       kemono.addPrevAndNextButton();
     },
   };
