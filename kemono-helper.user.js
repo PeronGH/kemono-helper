@@ -84,10 +84,14 @@
       return location.hostname.startsWith("kemono.");
     },
 
-    replaceThumbnails() {
-      return document.body
-        .querySelectorAll('a > img[src^="//img.kemono.party/thumbnail/"]')
-        .forEach((img) => img.src = img.parentElement.href);
+    async replaceThumbnails() {
+      const imgElements = document.body
+        .querySelectorAll('a > img[src^="//img.kemono.party/thumbnail/"]');
+
+      for (const img of imgElements) {
+        img.src = img.parentElement.href;
+        await utils.sleep(500);
+      }
     },
 
     addPrevAndNextButton() {
