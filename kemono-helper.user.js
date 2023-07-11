@@ -16,10 +16,6 @@
   const utils = {
     buttonCount: 0,
 
-    sleep(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    },
-
     addButton(title, href) {
       const linkButton = document.createElement("a");
       linkButton.textContent = title;
@@ -38,8 +34,40 @@
       return linkButton;
     },
 
-    async poll(provider, ...args) {
-      const result = provider(...args);
+    sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    },
+
+    repeat(asyncfn) {
+      let latestValue;
+      let latestError;
+
+      (async () => {
+        for (;;) {
+          try {
+            latestValue = await asyncfn();
+            latestError = undefined;
+          } catch (err) {
+            latestValue = undefined;
+            latestError = err;
+          }
+
+          await utils.sleep();
+        }
+      })();
+
+      return {
+        get value() {
+          return latestValue;
+        },
+        get error() {
+          return latestError;
+        },
+      };
+    },
+
+    async poll(provider) {
+      const result = provider();
       if (result) return result;
       await utils.sleep();
       return this.poll(provider);
@@ -75,6 +103,9 @@
     MATCH_CREATOR_ID_PATTERN: /\/creator\/(\d+)/,
     MATCH_POST_ID_PATTERN: /\/posts\/(\d+)/,
 
+    creatorButton: null,
+    postButton: null,
+
     get isCurrent() {
       return location.hostname.endsWith("fanbox.cc");
     },
@@ -98,17 +129,37 @@
     },
 
     async run() {
-      const creatorId = await utils.poll(fanbox.getCreatorId);
-      utils.addButton(
-        "Creator on Kemono",
-        `https://kemono.su/fanbox/user/${creatorId}`,
-      );
+      const creatorIdPoll = utils.repeat(async () => {
+        const creatorId = await utils.poll(fanbox.getCreatorId);
+        const creatorLink = `https://kemono.su/fanbox/user/${creatorId}`;
 
-      const postId = await utils.poll(fanbox.getPostId);
-      utils.addButton(
-        "Post on Kemono",
-        `https://kemono.su/fanbox/user/${creatorId}/post/${postId}`,
-      );
+        if (!fanbox.creatorButton) {
+          fanbox.creatorButton = utils.addButton(
+            "Creator on Kemono",
+            creatorLink,
+          );
+        } else fanbox.creatorButton.href = creatorLink;
+
+        return creatorId;
+      });
+
+      const postIdPoll = utils.repeat(async () => {
+        const creatorId = creatorIdPoll.value;
+        if (!creatorId) return;
+
+        const postId = await utils.poll(fanbox.getPostId);
+        const postLink =
+          `https://kemono.su/fanbox/user/${creatorId}/post/${postId}`;
+
+        if (!fanbox.postButton) {
+          fanbox.postButton = utils.addButton(
+            "Post on Kemono",
+            postLink,
+          );
+        } else fanbox.postButton.href = postLink;
+
+        return postId;
+      });
     },
   };
 
