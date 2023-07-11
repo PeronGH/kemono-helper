@@ -6,6 +6,9 @@
 // @match        https://*.fanbox.cc/*
 // @match        https://kemono.su/*
 // @match        https://kemono.party/*
+// @homepageURL  https://github.com/PeronGH/kemono-helper/
+// @downloadURL  https://raw.githubusercontent.com/PeronGH/kemono-helper/main/kemono-helper.user.js
+// @updateURL    https://raw.githubusercontent.com/PeronGH/kemono-helper/main/kemono-helper.user.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=kemono.su
 // @grant        none
 // ==/UserScript==
