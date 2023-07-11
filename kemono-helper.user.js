@@ -59,10 +59,10 @@
 
     addPrevAndNextButton() {
       const nextLink = document.body.querySelector("a.next");
-      utils.addButton("Next", nextLink.href);
+      if (nextLink) utils.addButton("Next", nextLink.href);
 
       const prevLink = document.body.querySelector("a.prev");
-      utils.addButton("Prev", prevLink.href);
+      if (prevLink) utils.addButton("Prev", prevLink.href);
     },
 
     run() {
