@@ -47,8 +47,6 @@
   };
 
   const kemono = {
-    isGesturesAdded: false,
-
     get isCurrent() {
       return location.hostname.startsWith("kemono.");
     },
@@ -57,36 +55,6 @@
       return document.body
         .querySelectorAll('a > img[src^="//img.kemono.party/thumbnail/"]')
         .forEach((img) => img.src = img.parentElement.href);
-    },
-
-    addGestures() {
-      if (kemono.isGesturesAdded) return;
-
-      let initialX = null;
-
-      const handleTouchStart = (event) => initialX = event.touches[0].clientX;
-
-      const handleTouchMove = (event) => {
-        if (initialX === null) {
-          return;
-        }
-
-        const currentX = event.touches[0].clientX;
-        const deltaX = currentX - initialX;
-
-        if (deltaX > 0) {
-          // Swiped right
-          console.log("Swiped right");
-        } else if (deltaX < 0) {
-          // Swiped left
-          console.log("Swiped left");
-        }
-
-        initialX = null;
-      };
-
-      document.addEventListener("touchstart", handleTouchStart);
-      document.addEventListener("touchmove", handleTouchMove);
     },
 
     addPrevAndNextButton() {
