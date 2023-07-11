@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Kemono Helper
-// @version      0.4
+// @version      0.5
 // @description  Helper to enhance Kemono experience.
 // @author       Peron
 // @match        https://*.fanbox.cc/*
@@ -24,8 +24,8 @@
       linkButton.style.backgroundColor = "orange";
       linkButton.style.color = "white";
       linkButton.style.position = "fixed";
-      linkButton.style.bottom = (16 + this.buttonCount++ * 32) + "px";
-      linkButton.style.right = "16px";
+      linkButton.style.bottom = (8 + this.buttonCount++ * 32) + "px";
+      linkButton.style.right = "8px";
       linkButton.style.padding = "4px";
       linkButton.style.borderRadius = "4px";
 
