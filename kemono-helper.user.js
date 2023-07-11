@@ -90,12 +90,15 @@
 
       for (const img of imgElements) {
         img.src = img.parentElement.href;
+        img.setAttribute("data-src", img.src);
         img.style.maxHeight = "calc(100vh - 16px)";
         await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-        });
-        console.debug("Loaded:", img);
+          img.addEventListener("load", resolve);
+          img.addEventListener("error", reject);
+          setTimeout(reject, 10000);
+        })
+          .then(() => console.debug("Loaded:", img))
+          .catch(() => console.error("Failed to load:", img));
       }
     },
 
