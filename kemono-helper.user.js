@@ -27,7 +27,7 @@
       linkButton.style.backgroundColor = "orange";
       linkButton.style.color = "white";
       linkButton.style.position = "fixed";
-      linkButton.style.bottom = (8 + this.buttonCount++ * 32) + "px";
+      linkButton.style.bottom = (8 + utils.buttonCount++ * 32) + "px";
       linkButton.style.right = "8px";
       linkButton.style.padding = "4px";
       linkButton.style.borderRadius = "4px";
@@ -73,7 +73,7 @@
       const result = provider();
       if (result) return result;
       await utils.sleep();
-      return this.poll(provider);
+      return utils.poll(provider);
     },
   };
 
