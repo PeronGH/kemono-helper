@@ -81,15 +81,16 @@
 
   const kemono = {
     get isCurrent() {
-      return location.hostname.startsWith("kemono.");
+      return ["kemono.su", "kemono.party"].includes(location.hostname);
     },
 
-    async replaceThumbnails() {
+    async replaceThumbnailsAndSetMaxWidth() {
       const imgElements = document.body
         .querySelectorAll('a > img[src^="//img.kemono.party/thumbnail/"]');
 
       for (const img of imgElements) {
         img.src = img.parentElement.href;
+        img.style.maxHeight = "calc(100vh - 16px)";
         await utils.sleep(500);
       }
     },
@@ -103,7 +104,7 @@
     },
 
     run() {
-      kemono.replaceThumbnails();
+      kemono.replaceThumbnailsAndSetMaxWidth();
       kemono.addPrevAndNextButton();
     },
   };
