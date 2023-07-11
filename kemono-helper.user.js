@@ -95,7 +95,7 @@
         await new Promise((resolve, reject) => {
           img.addEventListener("load", resolve);
           img.addEventListener("error", reject);
-          setTimeout(reject, 10000);
+          setTimeout(reject, 1e3);
         })
           .then(() => console.debug("Loaded:", img))
           .catch(() => console.error("Failed to load:", img));
