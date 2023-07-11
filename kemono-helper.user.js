@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         Kemono Helper
-// @version      0.5
+// @version      0.6
 // @description  Helper to enhance Kemono experience.
 // @author       Peron
 // @match        https://*.fanbox.cc/*
 // @match        https://kemono.su/*
+// @match        https://fantia.jp/*
 // @match        https://kemono.party/*
 // @homepageURL  https://github.com/PeronGH/kemono-helper/
 // @downloadURL  https://raw.githubusercontent.com/PeronGH/kemono-helper/main/kemono-helper.user.js
@@ -13,7 +14,7 @@
 // @grant        none
 // ==/UserScript==
 
-(async () => {
+(() => {
   "use strict";
 
   const utils = {
@@ -31,6 +32,7 @@
       linkButton.style.right = "8px";
       linkButton.style.padding = "4px";
       linkButton.style.borderRadius = "4px";
+      linkButton.style.zIndex = "9999";
 
       document.body.appendChild(linkButton);
 
@@ -131,7 +133,7 @@
         ?.[1];
     },
 
-    async run() {
+    addButtons() {
       const creatorIdPoll = utils.repeat(async () => {
         const creatorId = await utils.poll(fanbox.getCreatorId);
         const creatorLink = `https://kemono.su/fanbox/user/${creatorId}`;
@@ -164,8 +166,61 @@
         return postId;
       });
     },
+
+    run() {
+      fanbox.addButtons();
+    },
   };
 
-  if (fanbox.isCurrent) fanbox.run();
-  else if (kemono.isCurrent) kemono.run();
+  const fantia = {
+    MATCH_USER_ID_PATTERN: /\/fanclubs\/(\d+)/,
+    MATCH_POST_ID_PATTERN: /\/posts\/(\d+)/,
+
+    get isCurrent() {
+      return location.hostname === "fantia.jp";
+    },
+
+    getUserId() {
+      return location.pathname
+        .match(fantia.MATCH_USER_ID_PATTERN)
+        ?.[1] ??
+        document.body
+          .querySelector('a[href^="/fanclubs/"]')
+          ?.href
+          ?.match(fantia.MATCH_USER_ID_PATTERN)
+          ?.[1];
+    },
+
+    getPostId() {
+      return location.pathname
+        .match(fantia.MATCH_POST_ID_PATTERN)
+        ?.[1];
+    },
+
+    addButtons() {
+      const userId = fantia.getUserId();
+      if (userId) {
+        utils.addButton(
+          "Creator on Kemono",
+          `https://kemono.su/fantia/user/${userId}`,
+        );
+      }
+
+      const postId = fantia.getPostId();
+      if (postId) {
+        utils.addButton(
+          "Post on Kemono",
+          `https://kemono.su/fantia/user/${userId}/post/${postId}`,
+        );
+      }
+    },
+
+    run() {
+      fantia.addButtons();
+    },
+  };
+
+  [kemono, fanbox, fantia]
+    .find((site) => site.isCurrent)
+    ?.run();
 })();
