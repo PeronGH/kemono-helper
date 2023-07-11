@@ -70,7 +70,7 @@
     },
 
     async poll(provider) {
-      const result = provider();
+      const result = await provider();
       if (result) return result;
       await utils.sleep();
       return utils.poll(provider);
