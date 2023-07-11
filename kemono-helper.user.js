@@ -91,7 +91,11 @@
       for (const img of imgElements) {
         img.src = img.parentElement.href;
         img.style.maxHeight = "calc(100vh - 16px)";
-        await utils.sleep(500);
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+        console.debug("Loaded:", img);
       }
     },
 
