@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Kemono Helper
-// @version      0.6
+// @version      0.7
 // @description  Helper to enhance Kemono experience.
 // @author       Peron
 // @match        https://*.fanbox.cc/*
@@ -77,6 +77,15 @@
       await utils.sleep();
       return utils.poll(provider);
     },
+
+    async retry(asyncfn, interval = 500) {
+      try {
+        return await asyncfn();
+      } catch (err) {
+        await utils.sleep(interval);
+        return utils.retry(asyncfn, interval);
+      }
+    },
   };
 
   const kemono = {
@@ -89,17 +98,36 @@
         .querySelectorAll('a > img[src^="//img.kemono.party/thumbnail/"]');
 
       for (const img of imgElements) {
-        img.src = img.parentElement.href;
-        img.setAttribute("data-src", img.src);
         img.style.maxHeight = "calc(100vh - 16px)";
-        await new Promise((resolve, reject) => {
-          img.addEventListener("load", resolve);
-          img.addEventListener("error", reject);
-          setTimeout(reject, 1e3);
-        })
-          .then(() => console.debug("Loaded:", img))
-          .catch(() => console.error("Failed to load:", img));
+
+        const originalImageHref = img.parentElement.href;
+
+        img.src = originalImageHref;
+        img.setAttribute("data-src", originalImageHref);
+
+        await Promise.race([
+          kemono.monitorImgLoading(img),
+          utils.sleep(500),
+        ]);
       }
+    },
+
+    monitorImgLoading(img) {
+      return new Promise((resolve, reject) => {
+        img.addEventListener("load", resolve);
+        img.addEventListener("error", reject);
+      })
+        .then(() => console.debug("Loaded:", img))
+        .catch(() => {
+          console.error("Failed to load, retrying:", img);
+
+          const href = new URL(img.src);
+          href.searchParams.set("retry", Math.random());
+          img.src = href.href;
+          img.setAttribute("data-src", href.href);
+
+          kemono.monitorImgLoading(img);
+        });
     },
 
     addPrevAndNextButton() {
